@@ -47,7 +47,7 @@ function run() {
         }
         if (github_1.context.eventName !== 'issue_comment' ||
             !github_1.context.payload.comment ||
-            !github_1.context.payload.pull_request) {
+            !github_1.context.payload.issue.pull_request) {
             core.setOutput('triggered', 'false');
             return;
         }
@@ -58,7 +58,7 @@ function run() {
         }
         core.setOutput('triggered', 'true');
         const octokit = github_1.getOctokit(GITHUB_TOKEN);
-        yield octokit.rest.pulls.createReplyForReviewComment(Object.assign(Object.assign({}, github_1.context.repo), { comment_id: commentId, pull_number: github_1.context.payload.pull_request.number, body: `triggered` }));
+        yield octokit.rest.reactions.createForIssueComment(Object.assign(Object.assign({}, github_1.context.repo), { comment_id: commentId, content: 'rocket' }));
     });
 }
 run().catch(error => {

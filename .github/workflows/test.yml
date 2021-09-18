@@ -18,4 +18,5 @@ jobs:
         env:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
       - run: |
-          echo "${{ steps.pr.outputs.trigger }}"
+          echo "${{ steps.pr.outputs.triggered }}"
+

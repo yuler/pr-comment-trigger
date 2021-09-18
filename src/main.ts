@@ -13,7 +13,7 @@ async function run(): Promise<void> {
   if (
     context.eventName !== 'issue_comment' ||
     !context.payload.comment ||
-    !context.payload.pull_request
+    !context.payload.issue!.pull_request
   ) {
     core.setOutput('triggered', 'false')
     return
@@ -29,11 +29,10 @@ async function run(): Promise<void> {
   core.setOutput('triggered', 'true')
 
   const octokit = getOctokit(GITHUB_TOKEN)
-  await octokit.rest.pulls.createReplyForReviewComment({
+  await octokit.rest.reactions.createForIssueComment({
     ...context.repo,
     comment_id: commentId,
-    pull_number: context.payload.pull_request.number,
-    body: `triggered`
+    content: 'rocket'
   })
 }
 
