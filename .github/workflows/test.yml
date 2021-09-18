@@ -20,4 +20,5 @@ jobs:
       # Automatic cancel workflow when mismatch trigger
       - name: Echo
         run: |
+          sleep 2 # sleep 2s wait for cancel
           echo Trigger
