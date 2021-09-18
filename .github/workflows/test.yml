@@ -12,7 +12,10 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
       - uses: ./
+        id: 'pr'
         with:
           trigger: '/trigger'
         env:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+      - run: |
+          echo "${{ steps.pr.outputs.triggered }}"
