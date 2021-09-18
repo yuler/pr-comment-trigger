@@ -38,22 +38,33 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(186));
 const github_1 = __nccwpck_require__(438);
 function run() {
-    var _a;
+    var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
+        const { GITHUB_TOKEN } = process.env;
+        if (!GITHUB_TOKEN) {
+            core.setFailed('GITHUB_TOKEN is required');
+            return;
+        }
+        const octokit = github_1.getOctokit(GITHUB_TOKEN);
         const trigger = core.getInput('trigger', { required: true });
         const commentBody = (_a = github_1.context.payload.comment) === null || _a === void 0 ? void 0 : _a.body;
         if (github_1.context.eventName !== 'issue_comment' ||
             !github_1.context.payload.comment ||
-            !github_1.context.payload.issue.pull_request ||
+            !((_b = github_1.context.payload.issue) === null || _b === void 0 ? void 0 : _b.pull_request) ||
             !commentBody.startsWith(trigger)) {
+            yield octokit.rest.actions.cancelWorkflowRun(Object.assign(Object.assign({}, github_1.context.repo), { run_id: github_1.context.runId }));
+            return;
+        }
+        if ((_c = github_1.context.payload.issue) === null || _c === void 0 ? void 0 : _c.pull_request) {
             const { GITHUB_TOKEN } = process.env;
             if (!GITHUB_TOKEN) {
                 core.setFailed('GITHUB_TOKEN is required');
                 return;
             }
             const octokit = github_1.getOctokit(GITHUB_TOKEN);
-            yield octokit.rest.actions.cancelWorkflowRun(Object.assign(Object.assign({}, github_1.context.repo), { run_id: github_1.context.runId }));
-            return;
+            const { data } = yield octokit.rest.pulls.get(Object.assign(Object.assign({}, github_1.context.repo), { pull_number: github_1.context.payload.issue.number }));
+            const branch = data.head.ref;
+            core.setOutput('branch', branch);
         }
     });
 }
