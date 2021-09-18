@@ -1,14 +1,8 @@
 import * as core from '@actions/core'
-import {context, getOctokit} from '@actions/github'
+import {context} from '@actions/github'
 
 async function run(): Promise<void> {
   const trigger = core.getInput('trigger', {required: true})
-  const {GITHUB_TOKEN} = process.env
-
-  if (!GITHUB_TOKEN) {
-    core.setFailed('GITHUB_TOKEN is required')
-    return
-  }
 
   if (
     context.eventName !== 'issue_comment' ||
@@ -19,7 +13,7 @@ async function run(): Promise<void> {
     return
   }
 
-  const {id: commentId, body: commentBody} = context.payload.comment
+  const {body: commentBody} = context.payload.comment
 
   if (!commentBody.startsWith(trigger)) {
     core.setOutput('triggered', 'false')
@@ -27,13 +21,6 @@ async function run(): Promise<void> {
   }
 
   core.setOutput('triggered', 'true')
-
-  const octokit = getOctokit(GITHUB_TOKEN)
-  await octokit.rest.reactions.createForIssueComment({
-    ...context.repo,
-    comment_id: commentId,
-    content: 'rocket'
-  })
 }
 
 run().catch(error => {

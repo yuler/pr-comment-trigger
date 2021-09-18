@@ -40,25 +40,18 @@ const github_1 = __nccwpck_require__(438);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         const trigger = core.getInput('trigger', { required: true });
-        const { GITHUB_TOKEN } = process.env;
-        if (!GITHUB_TOKEN) {
-            core.setFailed('GITHUB_TOKEN is required');
-            return;
-        }
         if (github_1.context.eventName !== 'issue_comment' ||
             !github_1.context.payload.comment ||
             !github_1.context.payload.issue.pull_request) {
             core.setOutput('triggered', 'false');
             return;
         }
-        const { id: commentId, body: commentBody } = github_1.context.payload.comment;
+        const { body: commentBody } = github_1.context.payload.comment;
         if (!commentBody.startsWith(trigger)) {
             core.setOutput('triggered', 'false');
             return;
         }
         core.setOutput('triggered', 'true');
-        const octokit = github_1.getOctokit(GITHUB_TOKEN);
-        yield octokit.rest.reactions.createForIssueComment(Object.assign(Object.assign({}, github_1.context.repo), { comment_id: commentId, content: 'rocket' }));
     });
 }
 run().catch(error => {
