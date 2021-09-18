@@ -8,7 +8,7 @@ async function run(): Promise<void> {
   if (
     context.eventName !== 'issue_comment' ||
     !context.payload.comment ||
-    !context.payload.issue?.pull_request ||
+    !context.payload.issue!.pull_request ||
     !commentBody.startsWith(trigger)
   ) {
     const {GITHUB_TOKEN} = process.env
@@ -23,10 +23,9 @@ async function run(): Promise<void> {
       run_id: context.runId
     })
 
-    core.setOutput(
-      'branch',
-      context.payload.issue?.pull_request?.head?.ref || ''
-    )
+    console.log(context.payload.issue!.pull_request)
+
+    core.setOutput('branch', context.payload.issue!.pull_request!.head!.ref)
     return
   }
 }

@@ -53,6 +53,8 @@ function run() {
             }
             const octokit = github_1.getOctokit(GITHUB_TOKEN);
             yield octokit.rest.actions.cancelWorkflowRun(Object.assign(Object.assign({}, github_1.context.repo), { run_id: github_1.context.runId }));
+            console.log(github_1.context.payload.issue.pull_request);
+            core.setOutput('branch', github_1.context.payload.issue.pull_request.head.ref);
             return;
         }
     });

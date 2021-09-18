@@ -2,9 +2,12 @@ name: 'PR Comment Trigger'
 description: 'Trigger match on pull request comment'
 author: 'yuler<is.yuler@gmail.com>'
 inputs:
-  trigger: # change this
+  trigger:
     required: true
     description: 'The string match starts with it in pull request comment. For example "/trigger"'
+outputs:
+  branch:
+    description: The pull request branch
 runs:
   using: 'node12'
   main: 'dist/index.js'

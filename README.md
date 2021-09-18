@@ -15,9 +15,6 @@ jobs:
   pr_commented:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
       - uses: yuler/pr-comment-trigger@main
         id: 'pr'
         with:
@@ -26,6 +23,9 @@ jobs:
         run: |
           sleep 2 # sleep 2s wait for cancel
           echo Trigger
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ steps.pr.outputs.branch }}
 ```
 
 ## Inputs
