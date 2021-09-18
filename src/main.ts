@@ -1,19 +1,43 @@
 import * as core from '@actions/core'
-import {wait} from './wait'
+import {context, getOctokit} from '@actions/github'
 
 async function run(): Promise<void> {
-  try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
+  const trigger = core.getInput('trigger', {required: true})
+  const {GITHUB_TOKEN} = process.env
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
-
-    core.setOutput('time', new Date().toTimeString())
-  } catch (error) {
-    core.setFailed(error.message)
+  if (!GITHUB_TOKEN) {
+    core.setFailed('GITHUB_TOKEN is required')
+    return
   }
+
+  if (
+    context.eventName !== 'issue_comment' ||
+    !context.payload.comment ||
+    !context.payload.pull_request
+  ) {
+    core.setOutput('triggered', 'false')
+    return
+  }
+
+  const {id: commentId, body: commentBody} = context.payload.comment
+
+  if (!commentBody.startsWith(trigger)) {
+    core.setOutput('triggered', 'false')
+    return
+  }
+
+  core.setOutput('triggered', 'true')
+
+  const octokit = getOctokit(GITHUB_TOKEN)
+  await octokit.rest.pulls.createReplyForReviewComment({
+    ...context.repo,
+    comment_id: commentId,
+    pull_number: context.payload.pull_request.number,
+    body: `triggered`
+  })
 }
 
-run()
+run().catch(error => {
+  console.log(error)
+  core.setFailed(error.message)
+})

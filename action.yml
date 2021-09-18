@@ -2,10 +2,12 @@ name: 'Your name here'
 description: 'Provide a description here'
 author: 'Your name or organization here'
 inputs:
-  milliseconds: # change this
+  trigger: # change this
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: 'The string match starts with it in pull request comment. For example "/trigger"'
+outputs:
+  triggered:
+    description: the string 'true' if the trigger was found, otherwise the string 'false'
 runs:
   using: 'node12'
   main: 'dist/index.js'
