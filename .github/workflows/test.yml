@@ -17,8 +17,7 @@ jobs:
           trigger: '/trigger'
         env:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-      # Automatic cancel workflow when mismatch trigger
-      - name: Echo
+      - name: Echo # sleep 2s wait for cancel
         run: |
           sleep 2 # sleep 2s wait for cancel
           echo Trigger

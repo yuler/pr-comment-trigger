@@ -1,6 +1,6 @@
 # PR Comment Trigger
 
-> Trigger match on pull request comment
+> Trigger match on pull request comment. Automatic cancel workflow when mismatch trigger.
 
 ## Usage
 
@@ -22,19 +22,15 @@ jobs:
         id: 'pr'
         with:
           trigger: '/trigger'
-      - name: echo
-        if: ${{ steps.pr.outputs.triggered }} # condition for skip
+      - name: Echo # sleep 2s wait for cancel
         run: |
-          echo "${{ steps.pr.outputs.triggered }}"
+          sleep 2 # sleep 2s wait for cancel
+          echo Trigger
 ```
 
 ## Inputs
 
 `trigger`: The string match starts with it in pull request comment. For example '/trigger'
-
-## Outputs
-
-`triggered`: The string 'true' if the triggered, otherwise the string 'false'
 
 ## Refs
 
