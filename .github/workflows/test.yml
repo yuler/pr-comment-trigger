@@ -17,6 +17,7 @@ jobs:
           trigger: '/trigger'
         env:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-      - run: |
-          echo "${{ steps.pr.outputs.triggered }}"
-
+      # Automatic cancel workflow when mismatch trigger
+      - name: Echo
+        run: |
+          echo Trigger

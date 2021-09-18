@@ -1,26 +1,29 @@
 import * as core from '@actions/core'
-import {context} from '@actions/github'
+import {context, getOctokit} from '@actions/github'
 
 async function run(): Promise<void> {
   const trigger = core.getInput('trigger', {required: true})
+  const commentBody = context.payload.comment?.body
 
   if (
     context.eventName !== 'issue_comment' ||
     !context.payload.comment ||
-    !context.payload.issue!.pull_request
+    !context.payload.issue!.pull_request ||
+    !commentBody.startsWith(trigger)
   ) {
-    core.setOutput('triggered', 'false')
+    const {GITHUB_TOKEN} = process.env
+    if (!GITHUB_TOKEN) {
+      core.setFailed('GITHUB_TOKEN is required')
+      return
+    }
+
+    const octokit = getOctokit(GITHUB_TOKEN)
+    await octokit.rest.actions.cancelWorkflowRun({
+      ...context.repo,
+      run_id: context.runId
+    })
     return
   }
-
-  const {body: commentBody} = context.payload.comment
-
-  if (!commentBody.startsWith(trigger)) {
-    core.setOutput('triggered', 'false')
-    return
-  }
-
-  core.setOutput('triggered', 'true')
 }
 
 run().catch(error => {

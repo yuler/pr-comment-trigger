@@ -38,20 +38,23 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(186));
 const github_1 = __nccwpck_require__(438);
 function run() {
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         const trigger = core.getInput('trigger', { required: true });
+        const commentBody = (_a = github_1.context.payload.comment) === null || _a === void 0 ? void 0 : _a.body;
         if (github_1.context.eventName !== 'issue_comment' ||
             !github_1.context.payload.comment ||
-            !github_1.context.payload.issue.pull_request) {
-            core.setOutput('triggered', 'false');
+            !github_1.context.payload.issue.pull_request ||
+            !commentBody.startsWith(trigger)) {
+            const { GITHUB_TOKEN } = process.env;
+            if (!GITHUB_TOKEN) {
+                core.setFailed('GITHUB_TOKEN is required');
+                return;
+            }
+            const octokit = github_1.getOctokit(GITHUB_TOKEN);
+            yield octokit.rest.actions.cancelWorkflowRun(Object.assign(Object.assign({}, github_1.context.repo), { run_id: github_1.context.runId }));
             return;
         }
-        const { body: commentBody } = github_1.context.payload.comment;
-        if (!commentBody.startsWith(trigger)) {
-            core.setOutput('triggered', 'false');
-            return;
-        }
-        core.setOutput('triggered', 'true');
     });
 }
 run().catch(error => {
