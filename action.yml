@@ -5,9 +5,6 @@ inputs:
   trigger: # change this
     required: true
     description: 'The string match starts with it in pull request comment. For example "/trigger"'
-outputs:
-  triggered:
-    description: 'The string "true" if the triggered, otherwise the string "false"'
 runs:
   using: 'node12'
   main: 'dist/index.js'
