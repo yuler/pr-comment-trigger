@@ -32,6 +32,10 @@ jobs:
 
 `trigger`: The string match starts with it in pull request comment. For example '/trigger'
 
+## Outputs
+
+`branch`: The pull request branch
+
 ## Refs
 
 - https://github.com/Khan/pull-request-comment-trigger
